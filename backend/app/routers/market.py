@@ -38,14 +38,16 @@ def get_history(ticker: str, period: str = "1mo"):
         if hist.empty:
             raise HTTPException(status_code=404, detail="No historical data found")
         
-        data = []
-        for date, row in hist.iterrows():
-            data.append({
-                "date": date.strftime("%Y-%m-%d"),
-                "close": round(row["Close"], 2),
-                "high": round(row["High"], 2),
-                "low": round(row["Low"], 2)
-            })
+        # Prepare the data using vectorized operations
+        # Round values and rename columns to match the expected output
+        data_df = hist[['Close', 'High', 'Low']].round(2).rename(
+            columns={'Close': 'close', 'High': 'high', 'Low': 'low'}
+        )
+        # Format the index (Date) as string
+        data_df['date'] = hist.index.strftime("%Y-%m-%d")
+
+        # Convert to list of dictionaries in the correct order
+        data = data_df[['date', 'close', 'high', 'low']].to_dict('records')
         return {"ticker": ticker.upper(), "data": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
