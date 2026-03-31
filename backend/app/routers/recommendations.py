@@ -70,10 +70,11 @@ def get_recommendations(
                     underrepresented_sectors.append(sector)
 
         # Pick random stocks from underrepresented sectors
+        owned_tickers_set = set(owned_tickers)
         recommended_tickers = []
         for sector in underrepresented_sectors[:3]: # Pick top 3 underrepresented sectors
             candidates = POPULAR_STOCKS_BY_SECTOR[sector]
-            available = [s for s in candidates if s not in owned_tickers]
+            available = [s for s in candidates if s not in owned_tickers_set]
             if available:
                 recommended_tickers.extend(random.sample(available, min(2, len(available))))
         
@@ -82,7 +83,8 @@ def get_recommendations(
             all_candidates = []
             for sector, tickers in POPULAR_STOCKS_BY_SECTOR.items():
                 all_candidates.extend(tickers)
-            available = [s for s in all_candidates if s not in owned_tickers and s not in recommended_tickers]
+            recommended_tickers_set = set(recommended_tickers)
+            available = [s for s in all_candidates if s not in owned_tickers_set and s not in recommended_tickers_set]
             if available:
                 recommended_tickers.extend(random.sample(available, min(5 - len(recommended_tickers), len(available))))
 
