@@ -1,7 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 import yfinance as yf
-from typing import List, Dict
-from ..core.schemas import StockQuote
 
 router = APIRouter(tags=["market"])
 
